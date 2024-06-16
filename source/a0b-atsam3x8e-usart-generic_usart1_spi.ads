@@ -23,7 +23,7 @@ is
    procedure Configure (Self : in out USART1_SPI_Controller'Class);
 
    USART1_SPI : aliased USART1_SPI_Controller
-     (Peripheral => A0B.SVD.ATSAM3X8E.USART.USART1_Periph'Access,
+     (Peripheral => A0B.ATSAM3X8E.SVD.USART.USART1_Periph'Access,
       Identifier => Universal_Synchronous_Asynchronous_Receiver_Transmitter_1);
 
 end A0B.ATSAM3X8E.USART.Generic_USART1_SPI;

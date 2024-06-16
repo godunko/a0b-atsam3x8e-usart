@@ -6,7 +6,7 @@
 
 pragma Restrictions (No_Elaboration_Code);
 
-with A0B.SVD.ATSAM3X8E.USART; use A0B.SVD.ATSAM3X8E.USART;
+with A0B.ATSAM3X8E.SVD.USART; use A0B.ATSAM3X8E.SVD.USART;
 
 package body A0B.ATSAM3X8E.USART is
 
@@ -17,8 +17,8 @@ package body A0B.ATSAM3X8E.USART is
    procedure On_Interrupt (Self : in out USART_Controller'Class) is
       use type System.Address;
 
-      State : USART0_CSR_Register := Self.Peripheral.CSR;
-      Mask  : USART0_IMR_Register := Self.Peripheral.IMR;
+      State : constant USART0_CSR_Register := Self.Peripheral.CSR;
+      Mask  : constant USART0_IMR_Register := Self.Peripheral.IMR;
 
    begin
       if State.RXRDY and Mask.RXRDY then
@@ -67,7 +67,7 @@ package body A0B.ATSAM3X8E.USART is
    -- Release_Device --
    --------------------
 
-   procedure Release_Device (Self : in out SPI_Slave_Device'Class) is
+   overriding procedure Release_Device (Self : in out SPI_Slave_Device) is
    begin
       Self.Controller.Peripheral.CR := (RTSDIS => True, others => <>);
    end Release_Device;
@@ -76,7 +76,7 @@ package body A0B.ATSAM3X8E.USART is
    -- Select_Device --
    -------------------
 
-   procedure Select_Device (Self : in out SPI_Slave_Device'Class) is
+   overriding procedure Select_Device (Self : in out SPI_Slave_Device) is
    begin
       Self.Controller.Peripheral.CR := (RTSEN => True, others => <>);
    end Select_Device;

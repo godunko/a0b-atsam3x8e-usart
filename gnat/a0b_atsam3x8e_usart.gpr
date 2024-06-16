@@ -4,13 +4,9 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
+with "../config/a0b_atsam3x8e_usart_config";
+
 with "a0b_common";
-
-with "a0b_spi";
-
-with "a0b_atsam3x8e";
-with "a0b_svd_atsam3x8e";
-with "a0b_atsam3x8e_gpio";
 
 project A0B_ATSAM3X8E_USART is
 

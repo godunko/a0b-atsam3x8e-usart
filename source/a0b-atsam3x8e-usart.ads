@@ -8,10 +8,9 @@ pragma Restrictions (No_Elaboration_Code);
 
 private with System;
 
---  with A0B.ATSAM3X8E.PIO;
 private with A0B.Callbacks;
 with A0B.SPI;
-with A0B.SVD.ATSAM3X8E.USART;
+with A0B.ATSAM3X8E.SVD.USART;
 private with A0B.Types;
 
 package A0B.ATSAM3X8E.USART
@@ -19,7 +18,7 @@ package A0B.ATSAM3X8E.USART
 is
 
    type USART_Controller
-     (Peripheral : not null access A0B.SVD.ATSAM3X8E.USART.USART_Peripheral;
+     (Peripheral : not null access A0B.ATSAM3X8E.SVD.USART.USART_Peripheral;
       Identifier : Peripheral_Identifier) is tagged limited private;
 
    type SPI_Slave_Device
@@ -29,14 +28,14 @@ is
 
 --     procedure Configure (Self : in out SPI_Slave_Device'Class);
 
-   procedure Select_Device (Self : in out SPI_Slave_Device'Class);
+   overriding procedure Select_Device (Self : in out SPI_Slave_Device);
 
-   procedure Release_Device (Self : in out SPI_Slave_Device'Class);
+   overriding procedure Release_Device (Self : in out SPI_Slave_Device);
 
 private
 
    type USART_Controller
-     (Peripheral : not null access A0B.SVD.ATSAM3X8E.USART.USART_Peripheral;
+     (Peripheral : not null access A0B.ATSAM3X8E.SVD.USART.USART_Peripheral;
       Identifier : Peripheral_Identifier)
 --     --    is abstract limited new A0B.SPI.SPI_Bus with
      is tagged limited

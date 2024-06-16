@@ -9,8 +9,8 @@ pragma Restrictions (No_Elaboration_Code);
 pragma Ada_2022;
 
 with A0B.ARMv7M.NVIC_Utilities; use A0B.ARMv7M.NVIC_Utilities;
-with A0B.SVD.ATSAM3X8E.PMC;     use A0B.SVD.ATSAM3X8E.PMC;
-with A0B.SVD.ATSAM3X8E.USART;   use A0B.SVD.ATSAM3X8E.USART;
+with A0B.ATSAM3X8E.SVD.PMC;     use A0B.ATSAM3X8E.SVD.PMC;
+with A0B.ATSAM3X8E.SVD.USART;   use A0B.ATSAM3X8E.SVD.USART;
 
 package body A0B.ATSAM3X8E.USART.Generic_USART1_SPI is
 
