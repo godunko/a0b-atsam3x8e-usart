@@ -4,7 +4,7 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
-pragma Restrictions (No_Elaboration_Code);
+--  pragma Restrictions (No_Elaboration_Code);
 
 pragma Ada_2022;
 
@@ -12,7 +12,7 @@ with A0B.ARMv7M.NVIC_Utilities; use A0B.ARMv7M.NVIC_Utilities;
 with A0B.ATSAM3X8E.SVD.PMC;     use A0B.ATSAM3X8E.SVD.PMC;
 with A0B.ATSAM3X8E.SVD.USART;   use A0B.ATSAM3X8E.SVD.USART;
 
-package body A0B.ATSAM3X8E.USART.Generic_USART1_SPI is
+package body A0B.ATSAM3X8E.USART.SPI is
 
    procedure USART1_Handler
      with Export, Convention => C, External_Name => "USART1_Handler";
@@ -21,7 +21,7 @@ package body A0B.ATSAM3X8E.USART.Generic_USART1_SPI is
    -- Configure --
    ---------------
 
-   procedure Configure (Self : in out USART1_SPI_Controller'Class) is
+   procedure Configure (Self : in out USART_SPI_Controller'Class) is
       Value : PMC_PCER0_PID_Field_Array := [others => False];
 
    begin
@@ -87,10 +87,14 @@ package body A0B.ATSAM3X8E.USART.Generic_USART1_SPI is
       --    (TG     => 0,
       --     others => <>);
 
-      MISO.Configure_RXD1 (Pullup => True);
-      MOSI.Configure_TXD1 (Pullup => True);
-      SCK.Configure_SCK1 (Pullup => True);
-      NSS.Configure_RTS1 (Pullup => True);
+      Self.RXD.Configure_Alternative_Function
+        (Line => Self.RXD_Function, Pullup => True);
+      Self.TXD.Configure_Alternative_Function
+        (Line => Self.TXD_Function, Pullup => True);
+      Self.SCK.Configure_Alternative_Function
+        (Line => Self.SCK_Function, Pullup => True);
+      Self.RTS.Configure_Alternative_Function
+        (Line => Self.RTS_Function, Pullup => True);
 
       Clear_Pending (A0B.ARMv7M.External_Interrupt_Number (Self.Identifier));
       Enable_Interrupt
@@ -106,4 +110,4 @@ package body A0B.ATSAM3X8E.USART.Generic_USART1_SPI is
       On_Interrupt (USART1_SPI);
    end USART1_Handler;
 
-end A0B.ATSAM3X8E.USART.Generic_USART1_SPI;
+end A0B.ATSAM3X8E.USART.SPI;
