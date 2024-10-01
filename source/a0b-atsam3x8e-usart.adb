@@ -6,9 +6,18 @@
 
 pragma Restrictions (No_Elaboration_Code);
 
+with System.Machine_Code;
+
 with A0B.ATSAM3X8E.SVD.USART; use A0B.ATSAM3X8E.SVD.USART;
+with A0B.Types.GCC_Builtins;
 
 package body A0B.ATSAM3X8E.USART is
+
+   function Reverse_Bits
+     (Item : A0B.Types.Unsigned_8) return A0B.Types.Unsigned_8;
+
+   function Reverse_Bits
+     (Item : A0B.Types.Unsigned_32) return A0B.Types.Unsigned_32;
 
    ------------------
    -- On_Interrupt --
@@ -22,26 +31,25 @@ package body A0B.ATSAM3X8E.USART is
 
    begin
       if State.RXRDY and Mask.RXRDY then
-         if Self.Receive_Buffer /= System.Null_Address then
-            declare
-               Data : A0B.Types.Unsigned_8
-                 with Import,
-                      Convention => Ada,
-                      Address    => Self.Receive_Buffer;
+         declare
+            Aux : constant A0B.Types.Unsigned_8 :=
+              A0B.Types.Unsigned_8 (Self.Peripheral.RHR.RXCHR);
+            --  Read register to clear RXRDY interrupt status flag.
 
-            begin
-               Data := A0B.Types.Unsigned_8 (Self.Peripheral.RHR.RXCHR);
-            end;
+         begin
+            if Self.Receive_Buffer /= System.Null_Address then
+               declare
+                  Data : A0B.Types.Unsigned_8
+                    with Import,
+                         Convention => Ada,
+                         Address    => Self.Receive_Buffer;
 
-         else
-            declare
-               Data : A0B.Types.Unsigned_8 with Unreferenced;
-
-            begin
-               Data := A0B.Types.Unsigned_8 (Self.Peripheral.RHR.RXCHR);
-               --  Read register to clear RXRDY interrupt status flag.
-            end;
-         end if;
+               begin
+                  Data :=
+                    (if Self.Reverse_Bits then Reverse_Bits (Aux) else Aux);
+               end;
+            end if;
+         end;
 
          Self.Peripheral.CR := (TXDIS => True, others => <>);
          Self.Busy := False;
@@ -56,7 +64,9 @@ package body A0B.ATSAM3X8E.USART is
 
          begin
             Self.Peripheral.THR :=
-              (TXCHR  => USART0_THR_TXCHR_Field (Data),
+              (TXCHR  =>
+                 USART0_THR_TXCHR_Field
+                   (if Self.Reverse_Bits then Reverse_Bits (Data) else Data),
                others => <>);
             Self.Peripheral.CR := (TXDIS => True, others => <>);
          end;
@@ -71,6 +81,35 @@ package body A0B.ATSAM3X8E.USART is
    begin
       Self.Controller.Peripheral.CR := (RTSDIS => True, others => <>);
    end Release_Device;
+
+   ------------------
+   -- Reverse_Bits --
+   ------------------
+   function Reverse_Bits
+     (Item : A0B.Types.Unsigned_8) return A0B.Types.Unsigned_8
+   is
+      use type A0B.Types.Unsigned_32;
+   begin
+      return
+         A0B.Types.Unsigned_8
+           (A0B.Types.GCC_Builtins.bswap
+              (Reverse_Bits (A0B.Types.Unsigned_32 (Item))));
+   end Reverse_Bits;
+
+   ------------------
+   -- Reverse_Bits --
+   ------------------
+
+   function Reverse_Bits
+     (Item : A0B.Types.Unsigned_32) return A0B.Types.Unsigned_32 is
+   begin
+      return Result : A0B.Types.Unsigned_32 do
+         System.Machine_Code.Asm
+           (Template => "rbit %0, %1",
+            Outputs  => A0B.Types.Unsigned_32'Asm_Output ("=r", Result),
+            Inputs   => A0B.Types.Unsigned_32'Asm_Input ("r", Item));
+      end return;
+   end Reverse_Bits;
 
    -------------------
    -- Select_Device --

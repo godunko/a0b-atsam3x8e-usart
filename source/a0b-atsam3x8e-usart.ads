@@ -47,6 +47,7 @@ private
       Receive_Buffer    : System.Address;
       Finished_Callback : A0B.Callbacks.Callback;
 --        Selected_Device : access SPI_Slave_Device'Class;
+      Reverse_Bits      : Boolean := False;
    end record;
 
    type SPI_Slave_Device

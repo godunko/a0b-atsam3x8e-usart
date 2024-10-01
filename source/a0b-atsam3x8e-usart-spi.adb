@@ -25,6 +25,8 @@ package body A0B.ATSAM3X8E.USART.SPI is
       Value : PMC_PCER0_PID_Field_Array := [others => False];
 
    begin
+      Self.Reverse_Bits := True;
+
       Value (Integer (Self.Identifier)) := True;
 
       PMC_Periph.PMC_PCER0 :=
